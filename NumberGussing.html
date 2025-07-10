@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Number Guessing Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #wrapper {
+            background: rgba(25, 25, 35, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #6ab7ff;
+            text-shadow: 0 0 10px rgba(106, 183, 255, 0.5);
+        }
+
+        .difficulty-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .difficulty-btn {
+            background: #333;
+            color: #ddd;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .difficulty-btn.active {
+            background: #4a6fa5;
+            color: white;
+            box-shadow: 0 0 15px rgba(74, 111, 165, 0.6);
+        }
+
+        .normal-btn { background: #4CAF50; }
+        .normal-btn.active { background: #2E8B57; }
+
+        .medium-btn { background: #FF9800; }
+        .medium-btn.active { background: #FF8C00; }
+
+        .hard-btn { background: #F44336; }
+        .hard-btn.active { background: #D32F2F; }
+
+        p {
+            margin: 15px 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .form {
+            margin: 25px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        .guessField {
+            width: 200px;
+            padding: 14px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            border: 2px solid #444;
+            background: #333;
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .guessSubmit {
+            background: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            width: 200px;
+        }
+
+        .guessSubmit:hover {
+            background: #5a8fdf;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .resultParas {
+            background: rgba(40, 40, 50, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            text-align: left;
+        }
+
+        .resultParas p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .guesses, .lastResult {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .lowOrHi {
+            font-size: 1.2rem;
+            min-height: 40px;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(50, 50, 60, 0.8);
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2c3e50, #1a2a6c);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.4s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .modal p {
+            font-size: 1.3rem;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 15px 10px 0;
+        }
+
+        .modal-btn:hover {
+            background: #2E8B57;
+            transform: scale(1.05);
+        }
+
+        .modal-btn.secondary {
+            background: #4a6fa5;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #5a8fdf;
+        }
+
+        /* Celebration Effects */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f00;
+            border-radius: 50%;
+            animation: confetti-fall 5s ease-in-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            animation: firework-explode 1s ease-out forwards;
+        }
+
+        @keyframes firework-explode {
+            0% {
+                transform: translate(var(--x), var(--y)) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .difficulty-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .difficulty-btn {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            #wrapper {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <h1>Number Guessing Game</h1>
+        
+        <div class="difficulty-container">
+            <button class="difficulty-btn normal-btn" data-mode="normal">Normal</button>
+            <button class="difficulty-btn medium-btn" data-mode="medium">Medium</button>
+            <button class="difficulty-btn hard-btn active" data-mode="hard">Hard</button>
+        </div>
+        
+        <p>Try and guess a random number between <span class="highlight" id="min-range">1</span> 
+        and <span class="highlight" id="max-range">1000</span>.</p>
+        <p>You have <span class="highlight" id="attempts-count">10</span> attempts to guess the right number.</p>
+        
+        <form class="form">
+            <label for="guessField">Enter your guess:</label>
+            <input type="number" id="guessField" class="guessField" min="1" max="1000" required>
+            <input type="submit" id="subt" value="Submit Guess" class="guessSubmit">
+        </form>
+        
+        <div class="resultParas">
+            <p>Previous Guesses: <span class="guesses"></span></p>
+            <p>Guesses Remaining: <span class="lastResult">10</span></p>
+            <p class="lowOrHi"></p>
+        </div>
+    </div>
+    
+    <!-- Modal for game messages -->
+    <div class="modal" id="message-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Congratulations!</h2>
+            <p id="modal-message">You guessed the correct number!</p>
+            <button class="modal-btn" id="play-again">Play Again</button>
+            <button class="modal-btn secondary" id="change-mode">Change Mode</button>
+        </div>
+    </div>
+    
+    <script>
+        // Game state variables
+        let randomNumber;
+        let prevGuess = [];
+        let numGuess = 1;
+        let playGame = true;
+        let maxAttempts = 10;
+        let minRange = 1;
+        let maxRange = 1000;
+        let currentMode = 'hard';
+        
+        // DOM elements
+        const submit = document.querySelector('#subt');
+        const userInput = document.querySelector('#guessField');
+        const guessSlot = document.querySelector('.guesses');
+        const remaining = document.querySelector('.lastResult');
+        const lowOrHi = document.querySelector('.lowOrHi');
+        const minRangeEl = document.querySelector('#min-range');
+        const maxRangeEl = document.querySelector('#max-range');
+        const attemptsCountEl = document.querySelector('#attempts-count');
+        const modal = document.querySelector('#message-modal');
+        const modalTitle = document.querySelector('#modal-title');
+        const modalMessage = document.querySelector('#modal-message');
+        const playAgainBtn = document.querySelector('#play-again');
+        const changeModeBtn = document.querySelector('#change-mode');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+        
+        // Initialize the game
+        initGame();
+        
+        // Event listeners
+        submit.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (playGame) {
+                const guess = parseInt(userInput.value);
+                validateGuess(guess);
+            }
+        });
+        
+        playAgainBtn.addEventListener('click', function() {
+            modal.classList.remove('active');
+            resetGame();
+        });
+        
+        changeModeBtn.addEventListener('click', function() {
+            modal.classList.remove('active');
+            resetGame();
+        });
+        
+        // Add event listeners to difficulty buttons
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                difficultyBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                // Set the current mode
+                currentMode = this.getAttribute('data-mode');
+                // Update game settings based on mode
+                updateModeSettings();
+                // Reset the game with new settings
+                resetGame();
+            });
+        });
+        
+        // Initialize the game
+        function initGame() {
+            randomNumber = generateRandomNumber(minRange, maxRange);
+            updateModeSettings();
+        }
+        
+        // Update game settings based on selected mode
+        function updateModeSettings() {
+            switch(currentMode) {
+                case 'normal':
+                    minRange = 1;
+                    maxRange = 100;
+                    maxAttempts = 10;
+                    break;
+                case 'medium':
+                    minRange = 1;
+                    maxRange = 1000;
+                    maxAttempts = 12;
+                    break;
+                case 'hard':
+                    minRange = 1;
+                    maxRange = 100000;
+                    maxAttempts = 15;
+                    break;
+            }
+            
+            // Update UI to reflect current settings
+            minRangeEl.textContent = minRange;
+            maxRangeEl.textContent = maxRange;
+            attemptsCountEl.textContent = maxAttempts;
+            remaining.textContent = maxAttempts;
+            
+            // Set input field attributes
+            userInput.min = minRange;
+            userInput.max = maxRange;
+            userInput.placeholder = `Enter ${minRange}-${maxRange}`;
+        }
+        
+        // Generate random number based on current range
+        function generateRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        // Validate the user's guess
+        function validateGuess(guess) {
+            if (isNaN(guess)) {
+                displayMessage('Please enter a valid number', 'error');
+            } else if (guess < minRange || guess > maxRange) {
+                displayMessage(`Please enter a number between ${minRange} and ${maxRange}`, 'error');
+            } else {
+                prevGuess.push(guess);
+                if (numGuess >= maxAttempts) {
+                    displayGuess(guess);
+                    endGame(false);
+                } else {
+                    displayGuess(guess);
+                    checkGuess(guess);
+                }
+            }
+        }
+        
+        // Check if the guess is correct
+        function checkGuess(guess) {
+            if (guess === randomNumber) {
+                displayMessage(`Congratulations! You guessed it right!`, 'success');
+                showCelebration();
+                endGame(true);
+            } else if (guess < randomNumber) {
+                displayMessage(`Number is too low`, 'info');
+            } else if (guess > randomNumber) {
+                displayMessage(`Number is too high`, 'info');
+            }
+        }
+        
+        // Display the guess and update UI
+        function displayGuess(guess) {
+            userInput.value = '';
+            guessSlot.textContent = prevGuess.join(', ');
+            remaining.textContent = maxAttempts - numGuess;
+            numGuess++;
+        }
+        
+        // Display messages to the user
+        function displayMessage(message, type) {
+            lowOrHi.textContent = message;
+            lowOrHi.className = 'lowOrHi';
+            lowOrHi.classList.add(type);
+        }
+        
+        // End the game
+        function endGame(isWin) {
+            userInput.disabled = true;
+            submit.disabled = true;
+            playGame = false;
+            
+            // Show modal with appropriate message
+            if (isWin) {
+                modalTitle.textContent = 'Congratulations!';
+                modalMessage.textContent = `You guessed the number ${randomNumber} in ${numGuess-1} attempts!`;
+            } else {
+                modalTitle.textContent = 'Game Over!';
+                modalMessage.textContent = `The correct number was ${randomNumber}. Better luck next time!`;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        // Reset the game
+        function resetGame() {
+            // Reset game state
+            prevGuess = [];
+            numGuess = 1;
+            playGame = true;
+            
+            // Generate new random number
+            randomNumber = generateRandomNumber(minRange, maxRange);
+            
+            // Reset UI
+            guessSlot.textContent = '';
+            remaining.textContent = maxAttempts;
+            lowOrHi.textContent = '';
+            lowOrHi.className = 'lowOrHi';
+            userInput.value = '';
+            userInput.disabled = false;
+            submit.disabled = false;
+            userInput.focus();
+        }
+        
+        // Celebration effects for winning
+        function showCelebration() {
+            const wrapper = document.getElementById('wrapper');
+            
+            // Create confetti
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                confetti.style.background = getRandomColor();
+                wrapper.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+            
+            // Create fireworks
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createFirework();
+                }, i * 150);
+            }
+        }
+        
+        // Create a firework effect
+        function createFirework() {
+            const wrapper = document.getElementById('wrapper');
+            const centerX = 50; // Center of wrapper
+            const centerY = 30; // Center of wrapper
+            
+            for (let i = 0; i < 100; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * 100;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.setProperty('--x', (x - 50) + 'px');
+                firework.style.setProperty('--y', (y - 30) + 'px');
+                firework.style.background = getRandomColor();
+                wrapper.appendChild(firework);
+                
+                // Remove firework after animation
+                setTimeout(() => {
+                    firework.remove();
+                }, 1000);
+            }
+        }
+        
+        // Helper to get random color
+        function getRandomColor() {
+            const colors = ['#FF5252', '#FFD740', '#7C4DFF', '#18FFFF', '#69F0AE', '#FF4081'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+</html>
