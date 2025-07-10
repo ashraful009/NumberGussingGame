@@ -1,0 +1,292 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #wrapper {
+            background: rgba(25, 25, 35, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #6ab7ff;
+            text-shadow: 0 0 10px rgba(106, 183, 255, 0.5);
+        }
+
+        .difficulty-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .difficulty-btn {
+            background: #333;
+            color: #ddd;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .difficulty-btn.active {
+            background: #4a6fa5;
+            color: white;
+            box-shadow: 0 0 15px rgba(74, 111, 165, 0.6);
+        }
+
+        .normal-btn { background: #4CAF50; }
+        .normal-btn.active { background: #2E8B57; }
+
+        .medium-btn { background: #FF9800; }
+        .medium-btn.active { background: #FF8C00; }
+
+        .hard-btn { background: #F44336; }
+        .hard-btn.active { background: #D32F2F; }
+
+        p {
+            margin: 15px 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .form {
+            margin: 25px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        .guessField {
+            width: 200px;
+            padding: 14px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            border: 2px solid #444;
+            background: #333;
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .guessSubmit {
+            background: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            width: 200px;
+        }
+
+        .guessSubmit:hover {
+            background: #5a8fdf;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .resultParas {
+            background: rgba(40, 40, 50, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            text-align: left;
+        }
+
+        .resultParas p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .guesses, .lastResult {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .lowOrHi {
+            font-size: 1.2rem;
+            min-height: 40px;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(50, 50, 60, 0.8);
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2c3e50, #1a2a6c);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.4s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .modal p {
+            font-size: 1.3rem;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 15px 10px 0;
+        }
+
+        .modal-btn:hover {
+            background: #2E8B57;
+            transform: scale(1.05);
+        }
+
+        .modal-btn.secondary {
+            background: #4a6fa5;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #5a8fdf;
+        }
+
+        /* Celebration Effects */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f00;
+            border-radius: 50%;
+            animation: confetti-fall 5s ease-in-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            animation: firework-explode 1s ease-out forwards;
+        }
+
+        @keyframes firework-explode {
+            0% {
+                transform: translate(var(--x), var(--y)) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .difficulty-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .difficulty-btn {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            #wrapper {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
